@@ -1,12 +1,31 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-const path = require("path")
+const path = require("path");
+const winston = require("winston");
 
 app.use(express.static(path.join(__dirname, "public")))
 
-app.get("/", (req, res) => {
-	res.sendFile(path.join(__dirname + "/public/html/home.html"));
+const logger = winston.createLogger({
+	level: "info",
+	format: winston.format.json(),
+	defaultMeta: { service: "user-service"},
+	transports: [
+		new winston.transports.File({filename: "error.log", level: "error"}),
+		new winston.transports.File({filename: "combined.log"}),
+	],
 });
 
-app.listen(port, () => console.log(`App listening on port ${port}`));
+app.get("/", (req, res) => {
+	try {
+		res.sendFile(path.join(__dirname + "/public/html/home.html"));
+	} catch {
+		logger.error("Error: There was an error retrieving the page '/'")
+		console.error("Error: There was an error retrieving the page '/'")
+	}
+});
+
+app.listen(port, () => {
+	console.log(`App listening on port ${port}`);
+	logger.info(`App listening on port ${port}`)
+})
