@@ -18,10 +18,12 @@ const logger = winston.createLogger({
 
 app.get("/", (req, res) => {
 	try {
+		res.status(418);
+		res.header("Omae wa mou shindeiru");
 		res.sendFile(path.join(__dirname + "/public/html/home.html"));
 	} catch {
-		logger.error("Error: There was an error retrieving the page '/'")
-		console.error("Error: There was an error retrieving the page '/'")
+		logger.error("Error: There was an error retrieving the page '/'");
+		console.error("Error: There was an error retrieving the page '/'");
 	}
 });
 
